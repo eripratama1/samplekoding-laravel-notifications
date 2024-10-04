@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\NewUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\DatabaseNotification;
@@ -45,10 +46,19 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-        $user->notify(new WelcomeEmail());
+        //$user->notify(new WelcomeEmail());
 
+        /**
+         * Mengambil semua pengguna dengan role 'Admin' untuk mengirim notifikasi
+         * dan menyimpannya ke tabel notifications
+         */
         $admin = User::where('role','Admin')->get();
         Notification::send($admin, new DatabaseNotification($user));
+
+        /**
+         * Memicu event 'NewUser' untuk menyiarkan notifikasi tentang pendaftaran pengguna baru ke admin
+         */
+        event(new NewUser($user));
 
         Auth::login($user);
 

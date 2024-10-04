@@ -22,50 +22,52 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
 
                 <!-- Notification -->
-                <div class="relative">
-                    <button @click="showNotifications = !showNotifications"
-                        class="relative text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none
-                    transition duration-150 ease-in-out">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                            <path fill-rule="evenodd"
-                                d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        @if (auth()->user()->unReadNotifications->count() > 0)
-                            <span
-                                class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs
-                    font-bold leading-none text-red-100 bg-red-600 rounded-full ">
-                                {{ auth()->user()->unReadNotifications->count() }}
-                            </span>
-                        @endif
-                    </button>
+                @if (auth()->user()->role === 'Admin')
+                    <div class="relative">
+                        <button @click="showNotifications = !showNotifications"
+                            class="relative text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none
+                transition duration-150 ease-in-out">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                class="size-6">
+                                <path fill-rule="evenodd"
+                                    d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            @if (auth()->user()->unReadNotifications->count() > 0)
+                                <span
+                                    class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs
+                font-bold leading-none text-red-100 bg-red-600 rounded-full ">
+                                    {{ auth()->user()->unReadNotifications->count() }}
+                                </span>
+                            @endif
+                        </button>
 
-                    <div x-show="showNotifications" @click.away="showNotifications = false"
-                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
-                        <div class="py-2">
-                            @forelse (auth()->user()->unreadNotifications as $notification)
-                                <div
-                                    class="py-2 px-4 text-sm text-gray-700 dark:text-gray-300 flex justify-between items-center">
-                                    <span>{{ $notification->data['message'] }}</span>
-                                </div>
-
-                                <form action="{{ route('notifications.markAsread', $notification->id) }}"
-                                    method="POST">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div class="w-full mx-2">
-                                        <x-primary-button>Mark as read</x-primary-button>
+                        <div x-show="showNotifications" @click.away="showNotifications = false"
+                            class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
+                            <div class="py-2">
+                                @forelse (auth()->user()->unreadNotifications as $notification)
+                                    <div
+                                        class="py-2 px-4 text-sm text-gray-700 dark:text-gray-300 flex justify-between items-center">
+                                        <span>{{ $notification->data['message'] }}</span>
                                     </div>
-                                </form>
-                            @empty
-                                <div class="px-4 py-2 text-sm text-gray-50 dark:text-gray-600">
-                                    No new Notifications
-                                </div>
-                            @endforelse
+
+                                    <form action="{{ route('notifications.markAsread', $notification->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="w-full mx-2">
+                                            <x-primary-button>Mark as read</x-primary-button>
+                                        </div>
+                                    </form>
+                                @empty
+                                    <div class="px-4 py-2 text-base">
+                                        No new Notifications
+                                    </div>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
-
-                </div>
+                @endif
                 <!-- Notification -->
 
                 <x-dropdown align="right" width="48">

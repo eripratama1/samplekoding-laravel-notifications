@@ -33,34 +33,41 @@
                                     d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z"
                                     clip-rule="evenodd" />
                             </svg>
-                            @if (auth()->user()->unReadNotifications->count() > 0)
-                                <span
-                                    class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs
-                font-bold leading-none text-red-100 bg-red-600 rounded-full ">
-                                    {{ auth()->user()->unReadNotifications->count() }}
-                                </span>
-                            @endif
+                            <span id="notification-count"
+                                class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs
+                                   font-bold leading-none text-red-100 bg-red-600 rounded-full
+                                   {{ auth()->user()->unReadNotifications->count() > 0 ? '' : 'hidden' }}
+                                   ">
+                                {{ auth()->user()->unReadNotifications->count() }}
+                            </span>
                         </button>
 
                         <div x-show="showNotifications" @click.away="showNotifications = false"
                             class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
-                            <div class="py-2">
+                            <div class="py-2 px-4 text-sm text-gray-700 dark:text-gray-300" id="notification-container">
                                 @forelse (auth()->user()->unreadNotifications as $notification)
-                                    <div
-                                        class="py-2 px-4 text-sm text-gray-700 dark:text-gray-300 flex justify-between items-center">
+                                    <div class="flex justify-between items-start space-x-4 py-2">
+                                        <!-- Pesan notifikasi -->
                                         <span>{{ $notification->data['message'] }}</span>
-                                    </div>
 
-                                    <form action="{{ route('notifications.markAsread', $notification->id) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <div class="w-full mx-2">
-                                            <x-primary-button>Mark as read</x-primary-button>
-                                        </div>
-                                    </form>
+                                        <!-- Form untuk menandai notifikasi sebagai dibaca -->
+                                        <form action="{{ route('notifications.markAsread', $notification->id) }}"
+                                            method="POST" class="flex-shrink-0">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button
+                                                class="px-2 py-4 bg-gray-800 dark:bg-gray-200
+                                                border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800
+                                                uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700
+                                              dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300
+                                                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+                                              dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                                Mark As Read
+                                            </button>
+                                        </form>
+                                    </div>
                                 @empty
-                                    <div class="px-4 py-2 text-base">
+                                    <div class="px-4 py-2 text-base" id="no-notifications">
                                         No new Notifications
                                     </div>
                                 @endforelse
